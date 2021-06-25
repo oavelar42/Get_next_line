@@ -36,24 +36,27 @@ int	get_next_line(int fd, char **line)
 {
 	static char		*next[OPEN_MAX];
 	char			ptr[BUFFER_SIZE + 1];
-	char			*aux_ptr;
+	char			*j;
 	int				b;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || !line || read(fd, ptr, 0) < 0)
 		return (-1);
 	if (!next[fd])
 		next[fd] = ft_strndup("", 1);
-	while (!(aux_ptr = ft_strchr(next[fd], '\n'))
-		&& ((b = read(fd, ptr, BUFFER_SIZE)) > 0))
+	j = NULL;
+	b = 1;
+	while (!j && (b > 0))
 	{
+		b = read(fd, ptr, BUFFER_SIZE);
 		ptr[b] = 0;
 		if (next[fd])
-			aux_ptr = ft_strjoin(next[fd], ptr);
+			j = ft_strjoin(next[fd], ptr);
 		else
-			aux_ptr = ft_strndup(ptr, b);
+			j = ft_strndup(ptr, b);
 		if (next[fd])
 			free(next[fd]);
-		next[fd] = aux_ptr;
+		next[fd] = j;
+		j = ft_strchr(next[fd], '\n');
 	}
-	return (ft_ret(line, &next[fd], aux_ptr));
+	return (ft_ret(line, &next[fd], j));
 }
